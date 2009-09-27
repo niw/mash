@@ -80,6 +80,12 @@ describe Mash do
     @mash.dup.test.should == "test"
   end
 
+  it "should accept single letter key" do
+    @mash.a.should be_nil
+    @mash.a = "bob"
+    @mash.a.should == "bob"
+  end
+
   context "#initialize" do
     it "should convert an existing hash to a Mash" do
       converted = Mash.new({:abc => 123, :name => "Bob"})

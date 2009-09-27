@@ -175,7 +175,7 @@ class Mash < Hash
       initializing_reader(match[1])
     elsif key?(method_name)
       self[method_name]
-    elsif match = method_name.to_s.match(/^([a-z][a-z0-9A-Z_]+)$/)
+    elsif match = method_name.to_s.match(/^([a-z][a-z0-9A-Z_]*)$/)
       default(method_name)
     else
       super
