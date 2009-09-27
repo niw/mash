@@ -131,17 +131,17 @@ class Mash < Hash
     other_hash = other_hash.to_hash if other_hash.is_a?(Mash)
     other_hash = other_hash.deep_stringify_keys
     other_hash.each_pair do |k,v|
-      k = convert_key(k)
       self[k] = self[k].to_mash if self[k].is_a?(Hash) unless self[k].is_a?(Mash)
-      if self[k].is_a?(Hash) && other_hash[k].is_a?(Hash)
-        self[k] = self[k].deep_merge(other_hash[k]).dup
+      if self[k].is_a?(Hash) && v.is_a?(Hash)
+        self[k] = self[k].deep_merge(v).dup
       else
-        self.send(k + "=", convert_value(other_hash[k],true))
+        self[k] = convert_value(v, true)
       end
     end
+    self
   end
   alias_method :deep_merge!, :deep_update
-  
+
   # ==== Parameters
   # other_hash<Hash>::
   # A hash to update values in the mash with. Keys will be
@@ -151,11 +151,7 @@ class Mash < Hash
   # Mash:: The updated mash.
   def update(other_hash)
     other_hash.each_pair do |key, value|
-      if respond_to?(convert_key(key) + "=")
-        self.send(convert_key(key) + "=", convert_value(value))
-      else
-        regular_writer(convert_key(key), convert_value(value))
-      end
+      self[key] = convert_value(value, true)
     end
     self
   end
