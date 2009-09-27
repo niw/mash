@@ -142,6 +142,12 @@ class Mash < Hash
   end
   alias_method :deep_merge!, :deep_update
 
+  # Performs a update on a duplicate of the
+  # current mash.
+  def merge(other_hash)
+    self.dup.merge!(other_hash)
+  end
+
   # ==== Parameters
   # other_hash<Hash>::
   # A hash to update values in the mash with. Keys will be

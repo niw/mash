@@ -86,6 +86,12 @@ describe Mash do
     @mash.a.should == "bob"
   end
 
+  it "should merge with hash" do
+    @mash.a = 1
+    @mash.b = 2
+    @mash.merge(:c => 3).c.should == 3
+  end
+
   it "should deep_update correctly with Hash" do
     @mash.a = 1
     h = {:a => 1, :b => 2}
