@@ -45,7 +45,7 @@ class Mash < Hash
   # descending into arrays and hashes, converting
   # them as well.
   def initialize(source_hash = nil, &blk)
-    deep_update(source_hash) if source_hash
+    deep_update(source_hash, true) if source_hash
     super(&blk)
   end
   
@@ -127,15 +127,15 @@ class Mash < Hash
   
   # Recursively merges this mash with the passed
   # in hash, merging each hash in the hierarchy.
-  def deep_update(other_hash)
+  def deep_update(other_hash, dup = false)
     other_hash = other_hash.to_hash if other_hash.is_a?(Mash)
     other_hash = other_hash.deep_stringify_keys
     other_hash.each_pair do |k,v|
       self[k] = self[k].to_mash if self[k].is_a?(Hash) unless self[k].is_a?(Mash)
       if self[k].is_a?(Hash) && v.is_a?(Hash)
-        self[k] = self[k].deep_merge(v).dup
+        self[k] = self[k].deep_merge!(v)
       else
-        self[k] = convert_value(v, true)
+        self[k] = convert_value(v, dup)
       end
     end
     self
@@ -151,12 +151,12 @@ class Mash < Hash
   # Mash:: The updated mash.
   def update(other_hash)
     other_hash.each_pair do |key, value|
-      self[key] = convert_value(value, true)
+      self[key] = convert_value(value)
     end
     self
   end
   alias_method :merge!, :update
-  
+
   # Converts a mash back to a hash (with stringified keys)
   def to_hash
     Hash.new(default).merge(self)

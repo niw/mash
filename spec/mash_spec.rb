@@ -86,6 +86,31 @@ describe Mash do
     @mash.a.should == "bob"
   end
 
+  it "should deep_update correctly with Hash" do
+    @mash.a = 1
+    h = {:a => 1, :b => 2}
+    @mash.b = h
+    @mash.deep_update(:a => 2, :b => {:a => 2, :c => 3})
+    @mash.a.should == 2
+    @mash.b.a.should == 2
+    @mash.b.b.should == 2
+    @mash.b.c.should == 3
+  end
+
+  it "should deep_update correctly with Mash" do
+    @mash.a = 1
+    h = Mash.new(:a => 1, :b => 2)
+    @mash.b = h
+    m = Mash.new(:a => 2, :c => 3)
+    @mash.deep_update(:a => 2, :b => m)
+    @mash.a.should == 2
+    @mash.b.a.should == 2
+    @mash.b.b.should == 2
+    @mash.b.c.should == 3
+    @mash.b.object_id.should == h.object_id
+    @mash.b.object_id.should_not == m.object_id
+  end
+
   context "#initialize" do
     it "should convert an existing hash to a Mash" do
       converted = Mash.new({:abc => 123, :name => "Bob"})
