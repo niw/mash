@@ -74,7 +74,12 @@ describe Mash do
     @mash.details.email.should == 'randy@asf.com'
     @mash.details.address.state.should == 'TX'
   end
-  
+
+  it "should dulicate itself" do
+    @mash.test = "test"
+    @mash.dup.test.should == "test"
+  end
+
   context "#initialize" do
     it "should convert an existing hash to a Mash" do
       converted = Mash.new({:abc => 123, :name => "Bob"})
