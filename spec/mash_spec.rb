@@ -123,15 +123,15 @@ describe Hash do
     mash.some.should == "hash"
   end
   
-  it "#stringify_keys! should turn all keys into strings" do
+  it "#deep_stringify_keys! should turn all keys into strings" do
     hash = {:a => "hey", 123 => "bob"}
-    hash.stringify_keys!
+    hash.deep_stringify_keys!
     hash.should == {"a" => "hey", "123" => "bob"}
   end
   
-  it "#stringify_keys should return a hash with stringified keys" do
+  it "#deep_stringify_keys should return a hash with stringified keys" do
     hash = {:a => "hey", 123 => "bob"}
-    stringified_hash = hash.stringify_keys
+    stringified_hash = hash.deep_stringify_keys
     hash.should == {:a => "hey", 123 => "bob"}
     stringified_hash.should == {"a" => "hey", "123" => "bob"}
   end

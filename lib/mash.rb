@@ -129,7 +129,7 @@ class Mash < Hash
   # in hash, merging each hash in the hierarchy.
   def deep_update(other_hash)
     other_hash = other_hash.to_hash if other_hash.is_a?(Mash)
-    other_hash = other_hash.stringify_keys
+    other_hash = other_hash.deep_stringify_keys
     other_hash.each_pair do |k,v|
       k = convert_key(k)
       self[k] = self[k].to_mash if self[k].is_a?(Hash) unless self[k].is_a?(Mash)
@@ -211,17 +211,17 @@ class Hash
   
   # Returns a duplicate of the current hash with
   # all of the keys converted to strings.
-  def stringify_keys
-    dup.stringify_keys!
+  def deep_stringify_keys
+    dup.deep_stringify_keys!
   end
   
   # Converts all of the keys to strings
-  def stringify_keys!
+  def deep_stringify_keys!
     keys.each{|k| 
       v = delete(k)
       self[k.to_s] = v
-      v.stringify_keys! if v.is_a?(Hash)
-      v.each{|p| p.stringify_keys! if p.is_a?(Hash)} if v.is_a?(Array)
+      v.deep_stringify_keys! if v.is_a?(Hash)
+      v.each{|p| p.deep_stringify_keys! if p.is_a?(Hash)} if v.is_a?(Array)
     }
     self
   end
