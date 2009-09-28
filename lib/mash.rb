@@ -171,9 +171,14 @@ class Mash < Hash
   end
   alias_method :merge!, :update
 
-  # Converts a mash back to a hash (with stringified keys)
+  # Converts a mash back to a hash
   def to_hash
-    Hash.new(default).merge(self)
+    # NOTE for safety, this condition may be meaningless because either default or default_proc should be nil
+    if default_proc
+      Hash.new(&default_proc).merge(self)
+    else
+      Hash.new(default).merge(self)
+    end
   end
   
   def method_missing(method_name, *args) #:nodoc:
