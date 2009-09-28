@@ -211,6 +211,12 @@ class Mash < Hash
   end
 end
 
+class SymbolizedMash < Mash
+  def convert_key(key)
+    key.to_s.to_sym
+  end
+end
+
 class Hash
   # Returns a new Mash initialized from this Hash.
   def to_mash
