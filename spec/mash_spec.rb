@@ -164,7 +164,13 @@ describe Hash do
     mash.is_a?(Mash).should be_true
     mash.some.should == "hash"
   end
-  
+
+  it "should be convertible to a Mash with proc" do
+    mash = Hash.new(){|d,k| d = k + "a"}.to_mash
+    mash.is_a?(Mash).should be_true
+    mash[1].should == "1a"
+  end
+
   it "#deep_stringify_keys! should turn all keys into strings" do
     hash = {:a => "hey", 123 => "bob"}
     hash.deep_stringify_keys!
@@ -177,5 +183,4 @@ describe Hash do
     hash.should == {:a => "hey", 123 => "bob"}
     stringified_hash.should == {"a" => "hey", "123" => "bob"}
   end
-  
 end

@@ -45,8 +45,16 @@ class Mash < Hash
   # descending into arrays and hashes, converting
   # them as well.
   def initialize(source_hash = nil, &blk)
-    deep_update(source_hash, true) if source_hash
-    super(&blk)
+    if source_hash
+      deep_update(source_hash, true)
+      if block = blk || source_hash.default_proc
+        super(&block)
+      else
+        self.default = source_hash.default
+      end
+    else
+      super(&blk)
+    end
   end
   
   class << self; alias [] new; end
@@ -92,13 +100,13 @@ class Mash < Hash
   # if there isn't a value already assigned to the key requested.
   def initializing_reader(key)
     return self[key] if key?(key)
-    self[key] = Mash.new
+    self[key] = self.class.new
   end
   
   alias_method :regular_dup, :dup  
   # Duplicates the current mash as a new mash.
   def dup
-    Mash.new(self)
+    self.class.new(self)
   end
   
   alias_method :picky_key?, :key?
@@ -111,7 +119,7 @@ class Mash < Hash
   # defined attributes.
   def inspect
     ret = "<#{self.class.to_s}"
-    keys.sort.each do |key|
+    keys.each do |key|
       ret << " #{key}=#{self[key].inspect}"
     end
     ret << ">"
@@ -131,7 +139,7 @@ class Mash < Hash
     other_hash = other_hash.to_hash if other_hash.is_a?(Mash)
     other_hash = other_hash.deep_stringify_keys
     other_hash.each_pair do |k,v|
-      self[k] = self[k].to_mash if self[k].is_a?(Hash) unless self[k].is_a?(Mash)
+      self[k] = self.class.new(self[k]) if self[k].is_a?(Hash) unless self[k].is_a?(Mash)
       if self[k].is_a?(Hash) && v.is_a?(Hash)
         self[k] = self[k].deep_merge!(v)
       else
@@ -194,7 +202,7 @@ class Mash < Hash
     case value
       when Hash
         value = value.dup if value.is_a?(Mash) && dup
-        value.is_a?(Mash) ? value : value.to_mash
+        value.is_a?(Mash) ? value : self.class.new(value)
       when Array
         value.collect{ |e| convert_value(e) }
       else
@@ -206,9 +214,7 @@ end
 class Hash
   # Returns a new Mash initialized from this Hash.
   def to_mash
-    mash = Mash.new(self)
-    mash.default = default
-    mash
+    Mash.new(self)
   end
   
   # Returns a duplicate of the current hash with
